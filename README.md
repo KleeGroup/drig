@@ -1,4 +1,4 @@
-app-grid
+drig
 ========
 
 Application grid component.

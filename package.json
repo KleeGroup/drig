@@ -1,0 +1,28 @@
+{
+  "name": "drig",
+  "version": "0.0.0",
+  "description": "Application grid component.",
+  "main": "dist/drig.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pierr/drig.git"
+  },
+  "keywords": [
+    "drag",
+    "drop",
+    "grid",
+    "application"
+  ],
+  "author": "Pierre Besson <pierre.besson7@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pierr/drig/issues"
+  },
+  "homepage": "https://github.com/pierr/drig"
+}

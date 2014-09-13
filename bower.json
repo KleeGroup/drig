@@ -1,0 +1,25 @@
+{
+  "name": "drig",
+  "version": "0.0.0",
+  "homepage": "https://github.com/pierr/drig",
+  "authors": [
+    "Pierre <pierre.besson7@gmail.com>"
+  ],
+  "description": "Application grid component",
+  "main": "dist/drig.js",
+  "keywords": [
+    "js",
+    "grid",
+    "drag",
+    "drop",
+    "applications"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

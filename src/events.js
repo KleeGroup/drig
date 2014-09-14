@@ -11,6 +11,9 @@ var dragSrcEl = null;
 
 function handleDragStart(e) {
   this.style.opacity = '0.4'; // this / e.target is the source node.
+  dragSrcEl = this;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/html', this.innerHTML);
 }
 
 function handleDragOver(e) {
@@ -39,6 +42,13 @@ function handleDrop(e) {
     e.stopPropagation(); // stops the browser from redirecting.
   }
 
+  // Don't do anything if dropping the same column we're dragging.
+  if (dragSrcEl != this) {
+    // Set the source column's HTML to the HTML of the column we dropped on.
+    dragSrcEl.innerHTML = this.innerHTML;
+    this.innerHTML = e.dataTransfer.getData('text/html');
+  }
+
   // See the section on the DataTransfer object.
 
   return false;
@@ -55,8 +65,8 @@ function handleDragEnd(e) {
   [].forEach.call(applicationsDom, function(appDom) {
     appDom.classList.remove('over');
     appDom.style.opacity = '1';
-    dragSrcEl = undefined;
   });
+  dragSrcEl = undefined;
 }
 
 

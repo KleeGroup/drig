@@ -46,3 +46,15 @@
   -moz-border-radius-topright: 10px;
   border-top-right-radius: 10px;
 }
+
+.application.over{
+    border: 2px dashed #000;
+}
+
+.changePage{
+  height: 300px;
+  width: 150px;
+  float: left;
+  border: 2px solid green;
+  background-color: blue;
+}

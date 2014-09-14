@@ -2,7 +2,9 @@
   Dependencies.
  */
 var optionsParsing = require('./optionsParsing');
+var events = require('./events');
 var $ = require('jquery');
+
 /**
  * Initialization plugin function which is publish in jquery.
  * @param  {[type]} options
@@ -14,6 +16,7 @@ var drig = function drigJqueryPluginFromHtml(options){
     var html = processData(options.data);
     this.html(html);
   }
+  events.register(this);
   return this;
 };
 

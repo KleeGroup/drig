@@ -28,7 +28,7 @@ var page = function pageTemplate(pageData, options) {
  * @return {string} The filled template for a grid.
  */
 var grid = function gridTemplate(gridData){
-  return "<div class='grid' data-grid='"+gridData.grid+"'><div class='changePage' data-change='left'></div><div class='pageContainer'></div><div class='changePage' data-change='right'></div></div></div>";
+  return "<div class='grid' data-grid='"+gridData.grid+"'><div class='changePage' data-change='left'><</div><div class='pageContainer'></div><div class='changePage' data-change='right'>></div></div></div>";
 }
 
 module.exports= {

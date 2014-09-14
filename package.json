@@ -28,5 +28,13 @@
   "devDependencies": {
     "gulp": "^3.8.8",
     "mocha": "^1.21.4"
+  },
+  "dependencies": {
+    "browserify": "^5.11.2",
+    "express": "^4.9.0",
+    "gutil": "^1.5.5",
+    "jquery": "^2.1.1",
+    "node-static": "^0.7.5",
+    "vinyl-source-stream": "^1.0.0"
   }
 }

@@ -10,9 +10,9 @@ var $ = require('jquery');
  * @param  {[type]} options
  * @return {[type]}
  */
-var drig = function drigJqueryPluginFromHtml(options){
+var drig = function drigJqueryPluginFromHtml(options) {
   options = optionsParsing.parse(options);
-  if(options.isData){
+  if (options.isData) {
     var html = processData(options.data);
     this.html(html);
   }
@@ -20,18 +20,52 @@ var drig = function drigJqueryPluginFromHtml(options){
   return this;
 };
 
-function processData(data){
+/**
+ * Process the data and display a grid.
+ * @param  {data to display.} data
+ * @return {[type]}
+ */
+function processData(data, options) {
+  options = options || {};
+  options.perPage = options.perPage || 4;
   var templates = require('./templates');
   var domElement = document.createElement('div');
-  domElement.innerHTML = templates.grid({grid: 'drig'});
-  $('div.pageContainer', domElement).html(templates.page({page: 1, perPage: 6}));
-  var applications = data.applications;
-  applications.forEach(function(application){
-    console.log("application", application);
-    $('.page',domElement).append(templates.application(application));
+  domElement.innerHTML = templates.grid({
+    grid: 'drig'
   });
+  var applications = data.applications;
+  var pages = [
+    []
+  ];
+  var currentPage = 0,
+    newLength;
+  applications.forEach(function(application) {
+    application.currentPage = currentPage;
+    newLength = pages[currentPage].push(application);
+    //If the number of app is greater than the max page.
+    if (newLength === options.perPage) {
+      currentPage++;
+      pages[currentPage] = [];
+    }
+  });
+
+  console.log('pages', pages);
+
+  pages.forEach(function(page, pageIndex) {
+    $('div.pageContainer', domElement).append(templates.page({
+      page: pageIndex,
+      perPage: options.perPage
+    }));
+    var apps = page;
+    var pageSelector = ".page[data-page='" + pageIndex + "']";
+    apps.forEach(function(application) {
+      console.log("application", application);
+      $(pageSelector, domElement).append(templates.application(application));
+    });
+
+  })
+
   return domElement;
 }
 
 module.exports = drig;
-

@@ -90,6 +90,7 @@ function registerEvents(container, selector) {
   if (container === undefined || container[0] === undefined) {
     return console.warn('There is no application to register....');
   }
+  //Register all application events.
   applicationsDom = container[0].querySelectorAll(selector);
   [].forEach.call(applicationsDom, function(appDom) {
     appDom.addEventListener('dragstart', handleDragStart, false);

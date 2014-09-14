@@ -49,7 +49,7 @@ function processData(data, options) {
     }
   });
 
-  console.log('pages', pages);
+  //console.log('pages', pages);
 
   pages.forEach(function(page, pageIndex) {
     $('div.pageContainer', domElement).append(templates.page({

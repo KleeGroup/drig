@@ -45,19 +45,38 @@ function handleDrop(e) {
 
   // Don't do anything if dropping the same column we're dragging.
   if (dragSrcEl !== this) {
-    var dataOrderReplacement = this.getAttribute('data-order');
-    dragSrcEl.setAttribute('data-order', dataOrderReplacement);
+    //Add the minus notion.
+    var originalOrder = +dragSrcEl.getAttribute('data-order');
+    var dataOrderReplacement = +this.getAttribute('data-order');
+    var isBigger = dataOrderReplacement > originalOrder;
+    if (isBigger) {
+      dragSrcEl.setAttribute('data-order', dataOrderReplacement - 1);
+    } else {
+      dragSrcEl.setAttribute('data-order', dataOrderReplacement);
+
+    }
     this.parentNode.insertBefore(dragSrcEl, this);
-    
+
     var dragSrcOrder = +dragSrcEl.getAttribute('data-order');
     [].forEach.call(applicationsDom, function(appDom) {
       if (appDom != dragSrcEl) {
         var appOrder = +appDom.getAttribute('data-order');
-        if (appOrder >= this.srcOdrer) {
-          appDom.setAttribute('data-order', appOrder + 1);
+        if (this.isMoveRight) {
+          if (appOrder > this.departOrder && appOrder < this.arrivalOrder) {
+            appDom.setAttribute('data-order', appOrder - 1);
+          }
+        } else {
+          if (appOrder >= this.arrivalOrder && appOrder < this.departOrder) {
+            appDom.setAttribute('data-order', appOrder + 1);
+          }
         }
       }
-    }, {srcOdrer: dragSrcOrder});
+    }, {
+      srcOdrer: dragSrcOrder,
+      isMoveRight: isBigger,
+      arrivalOrder: dataOrderReplacement,
+      departOrder: originalOrder
+    });
     dragSrcEl = undefined;
     // Set the source column's HTML to the HTML of the column we dropped on.
     //   dragSrcEl.innerHTML = this.innerHTML;

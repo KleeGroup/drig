@@ -54,7 +54,8 @@ function processData(data, options) {
   pages.forEach(function(page, pageIndex) {
     $('div.pageContainer', domElement).append(templates.page({
       page: pageIndex,
-      perPage: options.perPage
+      perPage: options.perPage,
+      isHidden: pageIndex !== 0
     }));
     var apps = page;
     var pageSelector = ".page[data-page='" + pageIndex + "']";

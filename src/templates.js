@@ -18,8 +18,9 @@ var application = function appTemplate(appData, options) {
 var page = function pageTemplate(pageData, options) {
   options = options || {};
   pageData = pageData || {};
+  var hidden = pageData.isHidden ? "hidden" : "";
     var tagName = options.tagName || "div";
-  return "<"+tagName+" class='page' data-page='" + pageData.page + "' data-per-page='" + pageData.perPage + "'></"+tagName+">";
+  return "<"+tagName+" class='page "+hidden+"' data-page='" + pageData.page + "' data-per-page='" + pageData.perPage + "'></"+tagName+">";
 }
 
 /**

@@ -1,6 +1,7 @@
 var defaults = {
   isData: false
 };
+
 /**
  * Parse the options useng the defaults and the options argument.
  * @param  {object} options - Options to parse.
@@ -12,7 +13,7 @@ function parseOptions(options) {
     options.isData = true;
   }
 
-  return {};
+  return options;
 }
 
 /**

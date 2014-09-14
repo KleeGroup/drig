@@ -1,15 +1,10 @@
-/*
-  Dependencies.
- */
-var optionsParsing = require('optionsParsing');
+var drig = require('./drig');
 
-/**
- * Initialization plugin function which is publish in jquery.
- * @param  {[type]} options
- * @return {[type]}
- */
-$.fn.drig = function drigJqueryPluginFromHtml(options){
-  
-  return this;
-};
+if(!window){
+  throw new Error("Need to be in a web page to work...");
+}
 
+if(!window.$){
+  window.$ = require('jquery');
+}
+window.$.fn.drig = drig;

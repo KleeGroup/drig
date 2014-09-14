@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Drig example.</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon(s) in the root directory -->
+
+        <link rel="stylesheet" href="app.css">
+        <script src="bundle.js"></script>
+    </head>
+    <body>
+        <h1>Drig example</h1>
+        <div class='drigExampleContainer'></div>
+        <script type="text/javascript">
+        $('.drigExampleContainer').drig({
+            data: {
+                applications: [{
+                    id: 1,
+                    order: 1,
+                    name: "Application 1"
+                }, {
+                    id: 2,
+                    order: 2,
+                    name: "Application 2"
+                }, {
+                    id: 3,
+                    order: 3,
+                    name: "Application 3"
+                }, {
+                    id: 4,
+                    order: 4,
+                    name: "Application 4"
+                }]
+            }
+        });
+        </script>
+    </body>
+</html>

@@ -4,6 +4,7 @@ drig
 Application grid component.
 
 ## Purpose
+The purpose of this component is to provide a way to organize and navigate between your applications. It should work almost as on the **iPhone**.
 
 ## How to use
 In order to use the drig component it is super easy.
@@ -14,7 +15,7 @@ In order to use the drig component it is super easy.
 ```
 - In a **javascript** function which is called on the page initialization, initialize the component.
 ```javascript
-$('.drigExampleContainer').drig({
+$('div#drigContainer').drig({
             data: {
                 applications: [{
                     id: 1,

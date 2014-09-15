@@ -5,6 +5,7 @@ if(!window){
 }
 
 if(!window.$){
-  window.$ = require('jquery');
+//  window.$ = require('jquery');
+  console.error("noJquery");
 }
 window.$.fn.drig = drig;

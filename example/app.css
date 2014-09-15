@@ -58,3 +58,8 @@
   border: 2px solid green;
   background-color: blue;
 }
+
+.hidden {
+  display: none;
+  visibility: hidden;
+} 

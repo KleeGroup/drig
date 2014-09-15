@@ -6,7 +6,7 @@ gulp.task('browserify', function() {
     return browserify('./src/initialize.js')
         .bundle()
         //Pass desired output filename to vinyl-source-stream
-        .pipe(source('bundle.js'))
+        .pipe(source('drig.js'))
         // Start piping stream to tasks!
         .pipe(gulp.dest('./dist/'))
         .pipe(gulp.dest('./example/'));

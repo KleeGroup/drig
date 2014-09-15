@@ -1,7 +1,7 @@
 var defaults = {
   isData: false
 };
-
+var opts;
 /**
  * Parse the options useng the defaults and the options argument.
  * @param  {object} options - Options to parse.
@@ -12,7 +12,8 @@ function parseOptions(options) {
   if(options.data){
     options.isData = true;
   }
-
+  options.perPage = options.perPage ||4;
+  opts = options;
   return options;
 }
 
@@ -21,5 +22,8 @@ function parseOptions(options) {
  * @type {Object}
  */
 module.exports = {
-  parse: parseOptions
+  parse: parseOptions,
+  options : function(){
+    return opts;
+  }
 };

@@ -77,7 +77,7 @@ function processData(data, options) {
     var apps = page;
     var pageSelector = ".page[data-page='" + pageIndex + "']";
     apps.forEach(function(application) {
-      console.log("application", application);
+      //console.log("application", application);
       $(pageSelector, domElement).append(templates.application(application));
     });
 

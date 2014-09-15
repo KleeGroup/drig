@@ -179,7 +179,7 @@ function processData(data, options) {
     var apps = page;
     var pageSelector = ".page[data-page='" + pageIndex + "']";
     apps.forEach(function(application) {
-      console.log("application", application);
+      //console.log("application", application);
       $(pageSelector, domElement).append(templates.application(application));
     });
 
@@ -189,7 +189,7 @@ function processData(data, options) {
 }
 
 module.exports = drig;
-},{"./changePageEvents":2,"./events":4,"./optionsParsing":5,"./parser":6,"./templates":7}],4:[function(require,module,exports){
+},{"./changePageEvents":2,"./events":4,"./optionsParsing":5,"./parser":7,"./templates":8}],4:[function(require,module,exports){
 /**
  * Selector for all the application dom element.
  * @type {dom}
@@ -201,6 +201,7 @@ var applicationsDom;
  */
 var dragSrcEl = null;
 var elementsContainer;
+var pagesGestion = require('./pagesGestion');
 
 function handleDragStart(e) {
   this.style.opacity = '0.4'; // this / e.target is the source node.
@@ -248,8 +249,9 @@ function handleDrop(e) {
       dragSrcEl.setAttribute('data-order', dataOrderReplacement);
 
     }
-    this.parentNode.insertBefore(dragSrcEl, this);
-
+    var pageElement = this.parentNode;
+    pageElement.insertBefore(dragSrcEl, this);
+    //Renumbering applications.
     var dragSrcOrder = +dragSrcEl.getAttribute('data-order');
     [].forEach.call(applicationsDom, function(appDom) {
       if (appDom != dragSrcEl) {
@@ -270,6 +272,10 @@ function handleDrop(e) {
       arrivalOrder: dataOrderReplacement,
       departOrder: originalOrder
     });
+
+    //Processing pages.
+    pagesGestion.clean.call(pageElement.parentNode);
+
     dragSrcEl = undefined;
     // Set the source column's HTML to the HTML of the column we dropped on.
     //   dragSrcEl.innerHTML = this.innerHTML;
@@ -323,11 +329,11 @@ module.exports = {
   handleDragLeave: handleDragLeave,
   register: registerEvents
 };
-},{}],5:[function(require,module,exports){
+},{"./pagesGestion":6}],5:[function(require,module,exports){
 var defaults = {
   isData: false
 };
-
+var opts;
 /**
  * Parse the options useng the defaults and the options argument.
  * @param  {object} options - Options to parse.
@@ -338,7 +344,8 @@ function parseOptions(options) {
   if(options.data){
     options.isData = true;
   }
-
+  options.perPage = options.perPage ||4;
+  opts = options;
   return options;
 }
 
@@ -347,9 +354,43 @@ function parseOptions(options) {
  * @type {Object}
  */
 module.exports = {
-  parse: parseOptions
+  parse: parseOptions,
+  options : function(){
+    return opts;
+  }
 };
 },{}],6:[function(require,module,exports){
+/**
+ * Clean the pages with too  much applications.
+ * @return {[type]} [description]
+ */
+function cleanPages(container){
+  container = container || this;
+  var pages = container.querySelectorAll('.page[data-page]');
+  var appToPushNext;
+  var opts = require('./optionsParsing').options();
+  [].forEach.call(pages, function(page){
+    //Insert an app from the previous page.
+    if(appToPushNext){
+      page.appendChild(appToPushNext);
+    }
+    var apps = page.querySelectorAll('.application[data-app]');
+    var appsLength = apps.length;
+    if(appsLength > opts.perPage){
+      appToPushNext = apps[appsLength - 1];
+    }
+  });
+}
+
+/**
+ * Module de gestion des pages.
+ * @type {Object}
+ */
+module.exports = {
+  clean: cleanPages
+};
+
+},{"./optionsParsing":5}],7:[function(require,module,exports){
 /**
  * Parse the data from the dom container.
  * @param  {domElement} container - The dom element containing the grid.
@@ -377,7 +418,7 @@ function parseDataFromContainer(container, options){
 module.exports = {
   parse: parseDataFromContainer
 };
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /**
  * Template of an application.
  * @param  {object} appData - The data of an application.

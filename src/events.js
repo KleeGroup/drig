@@ -9,6 +9,7 @@ var applicationsDom;
  */
 var dragSrcEl = null;
 var elementsContainer;
+var pagesGestion = require('./pagesGestion');
 
 function handleDragStart(e) {
   this.style.opacity = '0.4'; // this / e.target is the source node.
@@ -56,8 +57,9 @@ function handleDrop(e) {
       dragSrcEl.setAttribute('data-order', dataOrderReplacement);
 
     }
-    this.parentNode.insertBefore(dragSrcEl, this);
-
+    var pageElement = this.parentNode;
+    pageElement.insertBefore(dragSrcEl, this);
+    //Renumbering applications.
     var dragSrcOrder = +dragSrcEl.getAttribute('data-order');
     [].forEach.call(applicationsDom, function(appDom) {
       if (appDom != dragSrcEl) {
@@ -78,6 +80,10 @@ function handleDrop(e) {
       arrivalOrder: dataOrderReplacement,
       departOrder: originalOrder
     });
+
+    //Processing pages.
+    pagesGestion.clean.call(pageElement.parentNode);
+
     dragSrcEl = undefined;
     // Set the source column's HTML to the HTML of the column we dropped on.
     //   dragSrcEl.innerHTML = this.innerHTML;

@@ -2,12 +2,13 @@
  * Selector for all the application dom element.
  * @type {dom}
  */
-var applicationsDom = undefined;
+var applicationsDom;
 /**
  * Source of  the drag element.
  * @type {[type]}
  */
 var dragSrcEl = null;
+var elementsContainer;
 
 function handleDragStart(e) {
   this.style.opacity = '0.4'; // this / e.target is the source node.
@@ -84,7 +85,7 @@ function handleDrop(e) {
   }
 
   // See the section on the DataTransfer object.
-
+  elementsContainer.dispatchEvent(new Event('application:change-order'));
   return false;
 }
 
@@ -105,12 +106,13 @@ function handleDragEnd(e) {
 
 function registerEvents(container, selector) {
   container = container || window.document;
+  elementsContainer = container;
   selector = selector || ".application[draggable='true']";
-  if (container === undefined || container[0] === undefined) {
+  if (container === undefined) {
     return console.warn('There is no application to register....');
   }
   //Register all application events.
-  applicationsDom = container[0].querySelectorAll(selector);
+  applicationsDom = container.querySelectorAll(selector);
   [].forEach.call(applicationsDom, function(appDom) {
     appDom.addEventListener('dragstart', handleDragStart, false);
     appDom.addEventListener('dragenter', handleDragEnter, false);
@@ -128,4 +130,4 @@ module.exports = {
   handleDragEnter: handleDragEnter,
   handleDragLeave: handleDragLeave,
   register: registerEvents
-}
+};

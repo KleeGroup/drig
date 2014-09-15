@@ -70,14 +70,20 @@ function changePage() {
   }
 }
 
+/**
+ * [registerEvents description]
+ * @param  {[type]} container [description]
+ * @param  {[type]} selector  [description]
+ * @return {[type]}           [description]
+ */
 function registerEvents(container, selector) {
   container = container || window.document;
   selector = selector || ".changePage[data-change]";
-  if (container === undefined || container[0] === undefined) {
+  if (container === undefined) {
     return console.warn('There is no page changer to register....');
   }
   //Register all application events.
-  pageChangers = container[0].querySelectorAll(selector);
+  pageChangers = container.querySelectorAll(selector);
   [].forEach.call(pageChangers, function(pageChanger) {
     pageChanger.addEventListener('dragenter', handleDragEnter, false);
     pageChanger.addEventListener('dragover', handleDragOver, false);
@@ -100,6 +106,7 @@ module.exports = {
 var optionsParsing = require('./optionsParsing');
 var events = require('./events');
 var changePageEvents = require('./changePageEvents');
+var parser = require('./parser');
 var $ = window.$;//require('jquery');
 
 /**
@@ -113,8 +120,22 @@ var drig = function drigJqueryPluginFromHtml(options) {
     var html = processData(options.data);
     this.html(html);
   }
-  events.register(this);
-  changePageEvents.register(this);
+   var element = this[0];
+  events.register(element);
+  changePageEvents.register(element);
+ 
+  //Handle custom events.
+   element.addEventListener('application:change-order', function(event){
+    console.info('application:change-order');
+    parser.parse(element);
+  }, false);
+  element.addEventListener('application:parse', function(data){
+    if(options.callback){
+      options.callback(data);
+    }else {
+      console.log('new appOrder', data);
+    }
+  }, false);
   return this;
 };
 
@@ -168,17 +189,18 @@ function processData(data, options) {
 }
 
 module.exports = drig;
-},{"./changePageEvents":2,"./events":4,"./optionsParsing":5,"./templates":6}],4:[function(require,module,exports){
+},{"./changePageEvents":2,"./events":4,"./optionsParsing":5,"./parser":6,"./templates":7}],4:[function(require,module,exports){
 /**
  * Selector for all the application dom element.
  * @type {dom}
  */
-var applicationsDom = undefined;
+var applicationsDom;
 /**
  * Source of  the drag element.
  * @type {[type]}
  */
 var dragSrcEl = null;
+var elementsContainer;
 
 function handleDragStart(e) {
   this.style.opacity = '0.4'; // this / e.target is the source node.
@@ -255,7 +277,7 @@ function handleDrop(e) {
   }
 
   // See the section on the DataTransfer object.
-
+  elementsContainer.dispatchEvent(new Event('application:change-order'));
   return false;
 }
 
@@ -276,12 +298,13 @@ function handleDragEnd(e) {
 
 function registerEvents(container, selector) {
   container = container || window.document;
+  elementsContainer = container;
   selector = selector || ".application[draggable='true']";
-  if (container === undefined || container[0] === undefined) {
+  if (container === undefined) {
     return console.warn('There is no application to register....');
   }
   //Register all application events.
-  applicationsDom = container[0].querySelectorAll(selector);
+  applicationsDom = container.querySelectorAll(selector);
   [].forEach.call(applicationsDom, function(appDom) {
     appDom.addEventListener('dragstart', handleDragStart, false);
     appDom.addEventListener('dragenter', handleDragEnter, false);
@@ -299,7 +322,7 @@ module.exports = {
   handleDragEnter: handleDragEnter,
   handleDragLeave: handleDragLeave,
   register: registerEvents
-}
+};
 },{}],5:[function(require,module,exports){
 var defaults = {
   isData: false
@@ -327,6 +350,34 @@ module.exports = {
   parse: parseOptions
 };
 },{}],6:[function(require,module,exports){
+/**
+ * Parse the data from the dom container.
+ * @param  {domElement} container - The dom element containing the grid.
+ * @return {object} - The parsed data from the html.
+ */
+function parseDataFromContainer(container, options){
+  options = options || {};
+  container = container || window.document;
+  selector = options.selector || ".application[data-app]";
+  var applicationsDom = container.querySelectorAll(selector);
+  var applications = [];
+
+  //Process the dom of each application.
+  [].forEach.call(applicationsDom, function(appDom) {
+    var appId = appDom.getAttribute('data-app');
+    var order = appDom.getAttribute('data-order');
+    applications.push({id: appId, order: order});
+  });
+  if(!options.silent){
+    container.dispatchEvent(new CustomEvent("application:parse", {detail: applications}));
+  }
+  return applications;
+}
+
+module.exports = {
+  parse: parseDataFromContainer
+};
+},{}],7:[function(require,module,exports){
 /**
  * Template of an application.
  * @param  {object} appData - The data of an application.

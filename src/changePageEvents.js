@@ -57,14 +57,20 @@ function changePage() {
   }
 }
 
+/**
+ * [registerEvents description]
+ * @param  {[type]} container [description]
+ * @param  {[type]} selector  [description]
+ * @return {[type]}           [description]
+ */
 function registerEvents(container, selector) {
   container = container || window.document;
   selector = selector || ".changePage[data-change]";
-  if (container === undefined || container[0] === undefined) {
+  if (container === undefined) {
     return console.warn('There is no page changer to register....');
   }
   //Register all application events.
-  pageChangers = container[0].querySelectorAll(selector);
+  pageChangers = container.querySelectorAll(selector);
   [].forEach.call(pageChangers, function(pageChanger) {
     pageChanger.addEventListener('dragenter', handleDragEnter, false);
     pageChanger.addEventListener('dragover', handleDragOver, false);

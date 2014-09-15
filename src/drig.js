@@ -4,6 +4,7 @@
 var optionsParsing = require('./optionsParsing');
 var events = require('./events');
 var changePageEvents = require('./changePageEvents');
+var parser = require('./parser');
 var $ = window.$;//require('jquery');
 
 /**
@@ -17,8 +18,22 @@ var drig = function drigJqueryPluginFromHtml(options) {
     var html = processData(options.data);
     this.html(html);
   }
-  events.register(this);
-  changePageEvents.register(this);
+   var element = this[0];
+  events.register(element);
+  changePageEvents.register(element);
+ 
+  //Handle custom events.
+   element.addEventListener('application:change-order', function(event){
+    console.info('application:change-order');
+    parser.parse(element);
+  }, false);
+  element.addEventListener('application:parse', function(data){
+    if(options.callback){
+      options.callback(data);
+    }else {
+      console.log('new appOrder', data);
+    }
+  }, false);
   return this;
 };
 

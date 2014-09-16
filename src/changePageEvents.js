@@ -7,6 +7,10 @@ var isOver = false;
  * Container for the page changer dom elements.
  */
 var pageChangers;
+var options = require('./optionsParsing').options();
+var hiddenClass = options.hiddenClass;
+var activeClass = options.activeClass;
+var selectorPageNotHidden = '.page:not(.' + hiddenClass + ')[data-page]';
 
 function handleDragOver(e) {
   if (e.preventDefault) {
@@ -38,21 +42,26 @@ function handleDragLeave(e) {
 }
 
 function changePage() {
+
   var isLeft = this.getAttribute('data-change') === "left";
   console.log('change page', isLeft, this);
   var grid = this.parentNode;
-  var currentPage = grid.querySelector('.page:not(.hidden)[data-page]');
+  var currentPage = grid.querySelector(selectorPageNotHidden);
   var currentPageNumber = +currentPage.getAttribute('data-page');
   if (isLeft) {
     if (currentPageNumber > 0) {
-      currentPage.classList.add('hidden');
-      grid.querySelector(".page[data-page='"+(--currentPageNumber)+"']").classList.remove('hidden');
+      currentPage.classList.add(hiddenClass);
+      var newActiveClassList = grid.querySelector(".page[data-page='" + (--currentPageNumber) + "']").classList;
+      newActiveClassList.remove(hiddenClass);
+      newActiveClassList.add(activeClass);
     }
-  }else{
+  } else {
     var maxPage = +grid.querySelector('.page[data-page]:last-child').getAttribute('data-page');
-    if(currentPageNumber < maxPage){
-     currentPage.classList.add('hidden');
-     grid.querySelector(".page[data-page='"+(++currentPageNumber)+"']").classList.remove('hidden');
+    if (currentPageNumber < maxPage) {
+      currentPage.classList.add(hiddenClass);
+      var nActiveClassList = grid.querySelector(".page[data-page='" + (++currentPageNumber) + "']").classList;
+      nActiveClassList.remove(hiddenClass);
+      nActiveClassList.add(activeClass);
     }
   }
 }

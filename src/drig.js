@@ -1,11 +1,8 @@
 /*
   Dependencies.
  */
-var optionsParsing = require('./optionsParsing');
-var events = require('./events');
-var changePageEvents = require('./changePageEvents');
-var parser = require('./parser');
-var $ = window.$;//require('jquery');
+
+var $ = window.$; //require('jquery');
 
 /**
  * Initialization plugin function which is publish in jquery.
@@ -13,24 +10,27 @@ var $ = window.$;//require('jquery');
  * @return {[type]}
  */
 var drig = function drigJqueryPluginFromHtml(options) {
-  options = optionsParsing.parse(options);
+  options = require('./optionsParsing').parse(options);
+  var events = require('./events');
+  var changePageEvents = require('./changePageEvents');
+  var parser = require('./parser');
   if (options.isData) {
-    var html = processData(options.data);
+    var html = processData(options.data, options);
     this.html(html);
   }
-   var element = this[0];
+  var element = this[0];
   events.register(element);
   changePageEvents.register(element);
- 
+
   //Handle custom events.
-   element.addEventListener('application:change-order', function(event){
+  element.addEventListener('application:change-order', function(event) {
     console.info('application:change-order');
     parser.parse(element);
   }, false);
-  element.addEventListener('application:parse', function(data){
-    if(options.callback){
+  element.addEventListener('application:parse', function(data) {
+    if (options.callback) {
       options.callback(data);
-    }else {
+    } else {
       console.log('new appOrder', data);
     }
   }, false);
@@ -49,7 +49,7 @@ function processData(data, options) {
   var domElement = document.createElement('div');
   domElement.innerHTML = templates.grid({
     grid: 'drig'
-  });
+  }, options);
   var applications = data.applications;
   var pages = [
     []
@@ -73,12 +73,12 @@ function processData(data, options) {
       page: pageIndex,
       perPage: options.perPage,
       isHidden: pageIndex !== 0
-    }));
+    }, options));
     var apps = page;
     var pageSelector = ".page[data-page='" + pageIndex + "']";
     apps.forEach(function(application) {
       //console.log("application", application);
-      $(pageSelector, domElement).append(templates.application(application));
+      $(pageSelector, domElement).append(templates.application(application, options));
     });
 
   });

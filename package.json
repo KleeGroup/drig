@@ -7,7 +7,10 @@
     "example": "example"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "build": "gulp browserify",
+    "serve": " node server.js",
+    "start": "npm run build & npm run serve"
   },
   "repository": {
     "type": "git",

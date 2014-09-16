@@ -20,6 +20,10 @@ var isOver = false;
  * Container for the page changer dom elements.
  */
 var pageChangers;
+var options = require('./optionsParsing').options();
+var hiddenClass = options.hiddenClass;
+var activeClass = options.activeClass;
+var selectorPageNotHidden = '.page:not(.' + hiddenClass + ')[data-page]';
 
 function handleDragOver(e) {
   if (e.preventDefault) {
@@ -51,21 +55,26 @@ function handleDragLeave(e) {
 }
 
 function changePage() {
+
   var isLeft = this.getAttribute('data-change') === "left";
   console.log('change page', isLeft, this);
   var grid = this.parentNode;
-  var currentPage = grid.querySelector('.page:not(.hidden)[data-page]');
+  var currentPage = grid.querySelector(selectorPageNotHidden);
   var currentPageNumber = +currentPage.getAttribute('data-page');
   if (isLeft) {
     if (currentPageNumber > 0) {
-      currentPage.classList.add('hidden');
-      grid.querySelector(".page[data-page='"+(--currentPageNumber)+"']").classList.remove('hidden');
+      currentPage.classList.add(hiddenClass);
+      var newActiveClassList = grid.querySelector(".page[data-page='" + (--currentPageNumber) + "']").classList;
+      newActiveClassList.remove(hiddenClass);
+      newActiveClassList.add(activeClass);
     }
-  }else{
+  } else {
     var maxPage = +grid.querySelector('.page[data-page]:last-child').getAttribute('data-page');
-    if(currentPageNumber < maxPage){
-     currentPage.classList.add('hidden');
-     grid.querySelector(".page[data-page='"+(++currentPageNumber)+"']").classList.remove('hidden');
+    if (currentPageNumber < maxPage) {
+      currentPage.classList.add(hiddenClass);
+      var nActiveClassList = grid.querySelector(".page[data-page='" + (++currentPageNumber) + "']").classList;
+      nActiveClassList.remove(hiddenClass);
+      nActiveClassList.add(activeClass);
     }
   }
 }
@@ -99,15 +108,12 @@ function registerEvents(container, selector) {
 module.exports = {
   register: registerEvents
 };
-},{}],3:[function(require,module,exports){
+},{"./optionsParsing":5}],3:[function(require,module,exports){
 /*
   Dependencies.
  */
-var optionsParsing = require('./optionsParsing');
-var events = require('./events');
-var changePageEvents = require('./changePageEvents');
-var parser = require('./parser');
-var $ = window.$;//require('jquery');
+
+var $ = window.$; //require('jquery');
 
 /**
  * Initialization plugin function which is publish in jquery.
@@ -115,24 +121,27 @@ var $ = window.$;//require('jquery');
  * @return {[type]}
  */
 var drig = function drigJqueryPluginFromHtml(options) {
-  options = optionsParsing.parse(options);
+  options = require('./optionsParsing').parse(options);
+  var events = require('./events');
+  var changePageEvents = require('./changePageEvents');
+  var parser = require('./parser');
   if (options.isData) {
-    var html = processData(options.data);
+    var html = processData(options.data, options);
     this.html(html);
   }
-   var element = this[0];
+  var element = this[0];
   events.register(element);
   changePageEvents.register(element);
- 
+
   //Handle custom events.
-   element.addEventListener('application:change-order', function(event){
+  element.addEventListener('application:change-order', function(event) {
     console.info('application:change-order');
     parser.parse(element);
   }, false);
-  element.addEventListener('application:parse', function(data){
-    if(options.callback){
+  element.addEventListener('application:parse', function(data) {
+    if (options.callback) {
       options.callback(data);
-    }else {
+    } else {
       console.log('new appOrder', data);
     }
   }, false);
@@ -151,7 +160,7 @@ function processData(data, options) {
   var domElement = document.createElement('div');
   domElement.innerHTML = templates.grid({
     grid: 'drig'
-  });
+  }, options);
   var applications = data.applications;
   var pages = [
     []
@@ -175,12 +184,12 @@ function processData(data, options) {
       page: pageIndex,
       perPage: options.perPage,
       isHidden: pageIndex !== 0
-    }));
+    }, options));
     var apps = page;
     var pageSelector = ".page[data-page='" + pageIndex + "']";
     apps.forEach(function(application) {
       //console.log("application", application);
-      $(pageSelector, domElement).append(templates.application(application));
+      $(pageSelector, domElement).append(templates.application(application, options));
     });
 
   });
@@ -345,6 +354,12 @@ function parseOptions(options) {
     options.isData = true;
   }
   options.perPage = options.perPage ||4;
+  options.pageClass = options.pageClass || "";
+  options.gridClass = options.gridClass || "";
+  options.appClass = options.appClass || "";
+  options.hiddenClass = options.hiddenClass || "hidden";
+  options.activeClass = options.activeClass || "active";
+  
   opts = options;
   return options;
 }
@@ -419,6 +434,7 @@ module.exports = {
   parse: parseDataFromContainer
 };
 },{}],8:[function(require,module,exports){
+var options = require('./optionsParsing').options();
 /**
  * Template of an application.
  * @param  {object} appData - The data of an application.
@@ -426,10 +442,13 @@ module.exports = {
  */
 var application = function appTemplate(appData, options) {
   options = options || {};
+  if (options.templateApplication) {
+    return options.templateApplication(appData, options);
+  }
   appData = appData || {};
-  var tagName = options.tagName || "div";
-  return "<"+tagName+" class='application' draggable='true' data-app='" + appData.id + "'  data-order='" + appData.order + "'><header class='title'>" + appData.name + "</header></"+tagName+">";
-}
+  var tagName = options.appTagName || "div";
+  return "<" + tagName + " class='application "+options.appClass+ "' draggable='true' data-app='" + appData.id + "'  data-order='" + appData.order + "'><header class='title'>" + appData.name + "</header></" + tagName + ">";
+};
 
 /**
  * Template of an appgrid page.
@@ -439,23 +458,30 @@ var application = function appTemplate(appData, options) {
 var page = function pageTemplate(pageData, options) {
   options = options || {};
   pageData = pageData || {};
-  var hidden = pageData.isHidden ? "hidden" : "";
-    var tagName = options.tagName || "div";
-  return "<"+tagName+" class='page "+hidden+"' data-page='" + pageData.page + "' data-per-page='" + pageData.perPage + "'></"+tagName+">";
-}
+  if (options.templatePage) {
+    return options.templatePage(pageData, options);
+  }
+  var hidden = pageData.isHidden ? options.hiddenClass : options.activeClass;
+  var tagName = options.pageTagName || "div";
+  return "<" + tagName + " class='page " + options.pageClass + " " + hidden + "' data-page='" + pageData.page + "' data-per-page='" + pageData.perPage + "'></" + tagName + ">";
+};
 
 /**
  * Template for a grid.
  * @param  {object} gridData - The data of the application grid.
  * @return {string} The filled template for a grid.
  */
-var grid = function gridTemplate(gridData){
-  return "<div class='grid' data-grid='"+gridData.grid+"'><div class='changePage' data-change='left'><</div><div class='pageContainer'></div><div class='changePage' data-change='right'>></div></div></div>";
-}
+var grid = function gridTemplate(gridData, options) {
+  options = options || {};
+  if (options.gridTemplate) {
+    return options.gridTemplate(gridData, options);
+  }
+  return "<div class='grid " + options.gridClass + "' data-grid='" + gridData.grid + "'><div class='changePage' data-change='left'><</div><div class='pageContainer'></div><div class='changePage' data-change='right'>></div></div></div>";
+};
 
-module.exports= {
+module.exports = {
   application: application,
   page: page,
   grid: grid
 };
-},{}]},{},[1]);
+},{"./optionsParsing":5}]},{},[1]);

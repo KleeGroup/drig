@@ -13,6 +13,12 @@ function parseOptions(options) {
     options.isData = true;
   }
   options.perPage = options.perPage ||4;
+  options.pageClass = options.pageClass || "";
+  options.gridClass = options.gridClass || "";
+  options.appClass = options.appClass || "";
+  options.hiddenClass = options.hiddenClass || "hidden";
+  options.activeClass = options.activeClass || "active";
+  
   opts = options;
   return options;
 }

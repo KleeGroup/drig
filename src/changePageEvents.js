@@ -41,29 +41,78 @@ function handleDragLeave(e) {
   isOver = false;
 }
 
-function changePage() {
+function changePage(event) {
 
   var isLeft = this.getAttribute('data-change') === "left";
   console.log('change page', isLeft, this);
   var grid = this.parentNode;
-  var currentPage = grid.querySelector(selectorPageNotHidden);
+  var currentPage = grid.querySelector('.active');
   var currentPageNumber = +currentPage.getAttribute('data-page');
   if (isLeft) {
-    if (currentPageNumber > 0) {
-      currentPage.classList.add(hiddenClass);
-      var newActiveClassList = grid.querySelector(".page[data-page='" + (--currentPageNumber) + "']").classList;
-      newActiveClassList.remove(hiddenClass);
-      newActiveClassList.add(activeClass);
-    }
-  } else {
-    var maxPage = +grid.querySelector('.page[data-page]:last-child').getAttribute('data-page');
-    if (currentPageNumber < maxPage) {
-      currentPage.classList.add(hiddenClass);
-      var nActiveClassList = grid.querySelector(".page[data-page='" + (++currentPageNumber) + "']").classList;
-      nActiveClassList.remove(hiddenClass);
-      nActiveClassList.add(activeClass);
-    }
-  }
+     if(currentPageNumber===0){
+         event.preventDefault();
+         event.stopPropagation();
+         return false;
+     }
+     //on remove la classe hiddenChangePageArrow de la fleche droite.
+     var arrowRight = $('a#arrow-right', document);
+     if(arrowRight!==undefined && arrowRight!==null && arrowRight.length>0){
+       arrowRight.removeClass('hiddenChangePageArrow');
+     }
+     if(currentPageNumber-1===0){
+       this.classList.add('hiddenChangePageArrow');
+     }
+     if (currentPageNumber > 0) {
+       currentPage.classList.add(hiddenClass);
+       currentPage.classList.remove(activeClass);
+       currentPage.classList.remove('active');
+       currentPage.classList.add('active');
+       var newActiveClassList = grid.querySelector(".page[data-page='" + (--currentPageNumber) + "']").classList;
+       newActiveClassList.remove(hiddenClass);
+       newActiveClassList.add(activeClass);
+       if(isOver){
+         currentPage.classList.remove('active');
+         newActiveClassList.add('active');
+       }
+     } else {
+       currentPage.classList.remove('active');
+       var nActiveClassListLast= grid.querySelector(".page[data-page='" + (++currentPageNumber) + "']").classList;
+       nActiveClassListLast.add('active');
+     }
+   } else {
+     var maxPage = +grid.querySelector('.page[data-page]:last-child').getAttribute('data-page');
+     if(currentPageNumber===maxPage){
+       event.preventDefault();
+       event.stopPropagation();
+       return false;
+     }
+     //on remove la classe hiddenChangePageArrow de la fleche droite.
+     var arrowLeft = $('a#arrow-left', document);
+     if(arrowLeft!==undefined && arrowLeft!==null && arrowLeft.length>0){
+         arrowLeft.removeClass('hiddenChangePageArrow');
+     }
+     if(currentPageNumber+1===maxPage){
+       this.classList.add('hiddenChangePageArrow');
+     }
+     if (currentPageNumber < maxPage) {
+       currentPage.classList.add(hiddenClass);
+       currentPage.classList.remove(activeClass);
+       currentPage.classList.remove('active');
+       currentPage.classList.add('active');
+       var nActiveClassList = grid.querySelector(".page[data-page='" + (++currentPageNumber) + "']").classList;
+       nActiveClassList.remove(hiddenClass);
+       nActiveClassList.add(activeClass);
+       if(isOver){
+         currentPage.classList.remove('active');
+         nActiveClassList.add('active');
+       }
+     } else {
+       currentPage.classList.remove('active');
+       var nActiveClassListLast= grid.querySelector(".page[data-page='" + (--currentPageNumber) + "']").classList;
+       nActiveClassListLast.add('active');
+     }
+   }
+   isOver = false;
 }
 
 /**

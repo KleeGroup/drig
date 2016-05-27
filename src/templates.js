@@ -26,9 +26,10 @@ var page = function pageTemplate(pageData, options) {
     return options.templatePage(pageData, options);
   }
   var hidden = pageData.isHidden ? options.hiddenClass : options.activeClass;
+  if(pageData.isHidden === false){
+    hidden +=' active';
+  }
   var tagName = options.pageTagName || "div";
-  var additionalTagOpening = options.pageAdditionalTag ? ("<"+ options.pageAdditionalTag+">" ): "";
-  var additionalTagClosing = options.pageAdditionalTag ? ("</"+ options.pageAdditionalTag+">" ): "";
   return "<" + tagName + " class='page " + options.pageClass + " " + hidden + "' data-page='" + pageData.page + "' data-per-page='" + pageData.perPage + "'></" + tagName + ">";
 };
 

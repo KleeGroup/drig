@@ -45,6 +45,14 @@ var drig = function drigJqueryPluginFromHtml(options) {
 function processData(data, options) {
   options = options || {};
   options.perPage = options.perPage || 4;
+
+  var pageNumber = parseInt(data.applications.length / options.perPage);
+  if (pageNumber * options.perPage < data.applications.length) {
+      pageNumber = pageNumber + 1;
+  }
+
+  options.pageNumber = pageNumber;
+
   var templates = require('./templates');
   var domElement = document.createElement('div');
   domElement.innerHTML = templates.grid({
@@ -54,6 +62,7 @@ function processData(data, options) {
   var pages = [
     []
   ];
+
   var currentPage = 0,
     newLength;
   applications.forEach(function(application) {
@@ -62,7 +71,9 @@ function processData(data, options) {
     //If the number of app is greater than the max page.
     if (newLength === options.perPage) {
       currentPage++;
-      pages[currentPage] = [];
+      if(currentPage < options.pageNumber){
+        pages[currentPage] = [];
+      }
     }
   });
 

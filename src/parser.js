@@ -17,7 +17,17 @@ function parseDataFromContainer(container, options){
     applications.push({id: appId, order: order});
   });
   if(!options.silent){
-    container.dispatchEvent(new CustomEvent("application:parse", {detail: applications}));
+    var isIE = (navigator.userAgent.toLowerCase().indexOf("msie") !== -1) || (navigator.userAgent.toLowerCase().indexOf("trident") !== -1);
+    if(isIE){
+      var newEvent = document.createEvent('Event');
+      newEvent.initEvent('application:parse', true, true);
+      var customEvent = document.createEvent('CustomEvent');
+      var params = params || { bubbles: false, cancelable: false, detail: applications };
+      customEvent.initCustomEvent("application:parse",  params.bubbles, params.cancelable, params.detail);
+      container.dispatchEvent(customEvent);
+    } else {
+      container.dispatchEvent(new CustomEvent("application:parse", {detail: applications}));
+    }
   }
   return applications;
 }
